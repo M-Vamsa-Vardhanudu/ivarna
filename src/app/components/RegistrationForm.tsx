@@ -42,7 +42,7 @@ export function RegistrationForm({ selectedEvent }: { selectedEvent: string }) {
     try {
       const token = credentialResponse.credential;
 
-      const response = await fetch("http://localhost:5000/api/auth/google", {
+      const response = await fetch("https://ivarna.onrender.com/api/auth/google", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ token })
@@ -77,7 +77,7 @@ export function RegistrationForm({ selectedEvent }: { selectedEvent: string }) {
         loggedemail: user.email
       };
 
-      const response = await fetch("http://localhost:5000/api/register", {
+      const response = await fetch("https://ivarna.onrender.com/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)

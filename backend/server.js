@@ -12,7 +12,7 @@ const app = express();
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: "https://ivarna.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -114,7 +114,8 @@ app.post("/api/register", async (req, res) => {
   }
 });
 
-const PORT = 5000;
+const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
