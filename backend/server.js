@@ -12,7 +12,10 @@ const app = express();
 const client = new OAuth2Client(process.env.CLIENT_ID);
 
 app.use(cors({
-  origin: "https://ivarna.vercel.app",
+  origin: [
+    "https://ivarna.vercel.app",
+    "http://localhost:5173"   // Vite default
+  ],
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true
 }));
@@ -68,7 +71,10 @@ const registrationSchema = new mongoose.Schema(
     rollNumber: { type: String, required: true, unique: true },
     year: { type: String, required: true },
     section: { type: String, required: true },
-    event: { type: String, required: true },
+    event: {
+      type: [String],   // array of strings
+      required: true
+    },
     transactionId: { type: String, required: true },
     email: { type: String, required: true },        // form email
     loggedEmail: { type: String, required: true }    // google login email
@@ -83,8 +89,22 @@ app.post("/api/register", async (req, res) => {
   try {
     const { name, rollNumber, year, section, event, transactionId, email, loggedemail } = req.body;
 
-    if (!name || !rollNumber || !year || !section || !event || !transactionId || !email || !loggedemail) {
-      return res.status(400).json({ success: false, message: "All fields required" });
+    if (
+      !name ||
+      !rollNumber ||
+      !year ||
+      !section ||
+      !event ||
+      !Array.isArray(event) ||
+      event.length === 0 ||
+      !transactionId ||
+      !email ||
+      !loggedemail
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: "All fields required"
+      });
     }
 
     const existing = await Registration.findOne({ rollNumber: rollNumber.trim() });

@@ -10,7 +10,7 @@ interface RegistrationFormData {
   rollNumber: string;
   year: string;
   section: string;
-  event: string;
+  event: string[];
   transactionId: string;
   email: string;
 }
@@ -27,16 +27,11 @@ export function RegistrationForm({ selectedEvent }: { selectedEvent: string }) {
   const { register, handleSubmit, formState: { errors }, reset, setValue } =
     useForm<RegistrationFormData>({
       defaultValues: {
-        event: selectedEvent,
+        event: [],
         email: ""
       }
     });
 
-  useEffect(() => {
-    if (selectedEvent) {
-      setValue("event", selectedEvent);
-    }
-  }, [selectedEvent, setValue]);
 
   const handleGoogleSuccess = async (credentialResponse: any) => {
     try {
@@ -104,83 +99,124 @@ export function RegistrationForm({ selectedEvent }: { selectedEvent: string }) {
   };
 
   return (
-    <div className="py-24 bg-slate-900">
-      <div className="max-w-3xl mx-auto px-6">
-        <div className="bg-slate-950 border border-slate-800 rounded-2xl p-8">
+  <div className="py-24 bg-slate-900">
+    <div className="max-w-3xl mx-auto px-6">
+      <div className="bg-slate-950 border border-slate-800 rounded-2xl p-8">
 
-          <h2 className="text-3xl text-white mb-4" id="registration">Registration</h2>
+        <h2 className="text-3xl text-white mb-4" id="registration">Registration</h2>
 
-          {!user ? (
-            <GoogleLogin onSuccess={handleGoogleSuccess} onError={() => toast.error("Google login failed")} />
-          ) : (
-            <p className="text-green-400">Logged in as: {user.email}</p>
-          )}
+        {!user ? (
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={() => toast.error("Google login failed")}
+          />
+        ) : (
+          <p className="text-green-400">Logged in as: {user.email}</p>
+        )}
 
-          <div className="h-4"></div>
+        <div className="h-4"></div>
 
-          {isSuccess ? (
-            <motion.div className="bg-green-500/10 p-6 rounded-xl text-center">
-              <Check className="text-green-400 w-10 h-10" />
-              <h3 className="text-white mt-2">Success</h3>
-            </motion.div>
-          ) : (
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {isSuccess ? (
+          <motion.div className="bg-green-500/10 p-6 rounded-xl text-center">
+            <Check className="text-green-400 w-10 h-10 mx-auto" />
+            <h3 className="text-white mt-2">Success</h3>
+          </motion.div>
+        ) : (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 
-              <input {...register("name", { required: true })}
-                placeholder="Full Name"
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
-              />
-              {errors.name && <span className="text-red-500">Required</span>}
+            <input
+              {...register("name", { required: true })}
+              placeholder="Full Name"
+              className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
+            />
+            {errors.name && <span className="text-red-500">Required</span>}
 
-              <input {...register("rollNumber", { required: true })}
-                placeholder="Roll Number"
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
-              />
+            <input
+              {...register("rollNumber", { required: true })}
+              placeholder="Roll Number"
+              className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
+            />
 
-              <select {...register("year", { required: true })}
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white">
-                <option value="">Year</option>
-                <option value="1">1st</option>
-                <option value="2">2nd</option>
-                <option value="3">3rd</option>
-                <option value="4">4th</option>
-              </select>
+            <select
+              {...register("year", { required: true })}
+              className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
+            >
+              <option value="">Year</option>
+              <option value="1">1st</option>
+              <option value="2">2nd</option>
+              <option value="3">3rd</option>
+              <option value="4">4th</option>
+            </select>
 
-              <input {...register("section", { required: true })}
-                placeholder="Section"
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
-              />
-              {errors.section && <span className="text-red-500">Required</span>}
+            <input
+              {...register("section", { required: true })}
+              placeholder="Section"
+              className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
+            />
+            {errors.section && <span className="text-red-500">Required</span>}
 
-              <input {...register("email", { required: true })}
-                placeholder="College Email"
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
-              />
-              {errors.email && <span className="text-red-500">Required</span>}
+            <input
+              {...register("email", { required: true })}
+              placeholder="College Email"
+              className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
+            />
+            {errors.email && <span className="text-red-500">Required</span>}
 
-              <select {...register("event", { required: true })}
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white">
-                <option value="">Event</option>
-                <option value="Project Expo">Project Expo</option>
-                <option value="Mystery of Doors & Memory Lane">Mystery of Doors</option>
-                <option value="Hyperlink Hustle">Hyperlink Hustle</option>
-              </select>
+           {/* Event Checklist */}
+            <div className="w-full p-4 bg-slate-900 border border-slate-700 text-white rounded-lg space-y-3">
+              <p className="font-semibold">Select Events</p>
 
-              <input {...register("transactionId", { required: true })}
-                placeholder="Transaction ID"
-                className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
-              />
-              {errors.transactionId && <span className="text-red-500">Required</span>}
+              {[
+                "Project Expo",
+                "Mystery of Doors & Memory Lane",
+                "Hyperlink Hustle",
+                "Exploit Arena",
+                "Tech Tambola"
+              ].map((eventName) => (
+                <label key={eventName} className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    value={eventName}
+                    {...register("event", { required: true })}
+                    className="accent-blue-500"
+                  />
+                  {eventName}
+                </label>
+              ))}
 
-              <button type="submit" disabled={isSubmitting}
-                className="w-full bg-blue-600 text-white p-3">
-                {isSubmitting ? <Loader2 className="animate-spin" /> : "Register"}
-              </button>
-            </form>
-          )}
+              {errors.event && (
+                <span className="text-red-500 text-sm">
+                  Select at least one event
+                </span>
+              )}
+            </div>
 
-        </div>
+            <input
+              {...register("transactionId", { required: true })}
+              placeholder="Transaction ID"
+              className="w-full p-3 bg-slate-900 border border-slate-700 text-white"
+            />
+            {errors.transactionId && (
+              <span className="text-red-500">Required</span>
+            )}
+
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full bg-blue-600 text-white p-3 rounded-lg flex justify-center items-center"
+            >
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Register"
+              )}
+            </button>
+
+          </form>
+        )}
+
       </div>
     </div>
-  );
+  </div>
+);
 }
